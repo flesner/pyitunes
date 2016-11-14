@@ -124,7 +124,7 @@ def search_movie(query, limit=100, offset=0, order=None, store=COUNTRY):
     :param store: The iTunes store localization to search against.
         Default: `COUNTRY`
     """
-    return Search(query=query, media='muovie', entity='movie',
+    return Search(query=query, media='movie', entity='movie',
                   offset=offset, limit=limit, order=order, country=store).get()
 
 

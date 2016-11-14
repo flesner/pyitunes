@@ -54,7 +54,10 @@ class BaseObject(object):
         appropriate assortment of :class:`Resource`'s based on the response
         """
         response = SESSION.get(self.url, params=self._search_terms)
-        self.json = response.json()
+        if response.status_code == requests.codes.ok:
+            self.json = response.json()
+        else:
+            raise ITunesException(u'{}: {}'.format(response.status_code, response.reason))
 
         if 'errorMessage' in self.json:
             raise ITunesException(self.json['errorMessage'])
@@ -174,7 +177,7 @@ class Resource(object):
         return '<{type}>: {name}'.format(type=self.type.title(), name=name)
 
     def __eq__(self, other):
-        return self.id == other.id
+        return self.id == other.id if other and hasattr(other, 'id') else False
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -239,7 +242,7 @@ class Album(Resource):
         self.url = json.get('collectionViewUrl', None)
         self.amg_id = json.get('amgAlbumId', None)
 
-        self.price = round(json['collectionPrice'] or 0, 4)
+        self.price = round(json.get('collectionPrice', 0), 4)
         self.price_currency = json['currency']
         self.track_count = json['trackCount']
         self.copyright = json.get('copyright', None)
