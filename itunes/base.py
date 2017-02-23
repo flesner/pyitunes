@@ -153,7 +153,7 @@ class Resource(object):
             self.artwork['60'] = json['artworkUrl60']
             self.artwork['600'] = self.artwork['60'].replace('60x60',
                                                              '600x600')
-        if '' in json:
+        if 'artworkUrl100' in json:
             self.artwork['100'] = json['artworkUrl100']
         if 'artworkUrl512' in json:
             self.artwork['512'] = json['artworkUrl512']
