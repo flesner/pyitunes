@@ -15,6 +15,17 @@ TS_FORMAT = '%Y-%m-%dT%H:%M:%S'
 #: Globally accessible cache-enabled requests session
 SESSION = CacheControl(requests.session())
 
+try:
+    from django.conf import settings
+    PROXIES = settings.ITUNES_PROXY
+except ImportError:
+    try:
+        from proxyconfig import proxies
+        PROXIES = proxies
+    except ImportError:
+        print 'not using the itunes pass through proxy'
+        PROXIES = None
+
 
 class ITunesException(Exception):
     """Base iTunes request exception"""
@@ -53,7 +64,7 @@ class BaseObject(object):
         """Execute an HTTP GET against the iTunes API and construct an
         appropriate assortment of :class:`Resource`'s based on the response
         """
-        response = SESSION.get(self.url, params=self._search_terms)
+        response = SESSION.get(self.url, params=self._search_terms, proxies=PROXIES)
         if response.status_code == requests.codes.ok:
             self.json = response.json()
         else:
