@@ -42,11 +42,16 @@ class BaseObject(object):
         self.num_results = None
         try:
             from django.conf import settings
-            self.proxies = settings.ITUNES_PROXY
+            if hasattr(settings, 'ITUNES_PROXY'):
+                self.proxies = settings.ITUNES_PROXY
+                print 'USING: django settings'
+            else:
+                self.proxies = None
         except ImportError:
             try:
                 from proxyconfig import proxies
                 self.proxies = proxies
+                print 'USING: proxyconfig'
             except ImportError:
                 print 'not using the itunes pass through proxy'
                 self.proxies = None
