@@ -40,23 +40,6 @@ class BaseObject(object):
                               if v is not None}
         self.json = None
         self.num_results = None
-        try:
-            from django.conf import settings
-            if hasattr(settings, 'ITUNES_PROXY'):
-                self.proxies = settings.ITUNES_PROXY
-                print 'USING: django settings'
-            else:
-                self.proxies = None
-        except ImportError:
-            try:
-                from proxyconfig import proxies
-                self.proxies = proxies
-                print 'USING: proxyconfig'
-            except ImportError:
-                print 'not using the itunes pass through proxy'
-                self.proxies = None
-
-
 
     @property
     def url(self):
@@ -69,7 +52,7 @@ class BaseObject(object):
         """Execute an HTTP GET against the iTunes API and construct an
         appropriate assortment of :class:`Resource`'s based on the response
         """
-        response = SESSION.get(self.url, params=self._search_terms, proxies=self.proxies)
+        response = SESSION.get(self.url, params=self._search_terms)
         if response.status_code == requests.codes.ok:
             self.json = response.json()
         else:
